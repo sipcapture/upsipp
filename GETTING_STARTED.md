@@ -5,7 +5,7 @@ Do **not** fork the template repository for production monitoring — create a n
 
 ## 1. Create your monitoring repository
 
-1. Open the [UPSIPP template repository](https://github.com/lmangani/upsipp).
+1. Open the [UPSIPP template repository](https://github.com/sipcapture/upsipp).
 2. Click **Use this template** → **Create a new repository**.
 3. Choose your organization or personal account, name the repo (e.g. `sip-status`), and create it.
 

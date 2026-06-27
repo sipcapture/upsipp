@@ -6,8 +6,8 @@ about: Monitor SIP endpoints with gossipper scenarios, GitHub Issues, and Pages
 title: Support
 contact_links:
   - name: Getting started guide
-    url: https://github.com/lmangani/upsipp/blob/main/GETTING_STARTED.md
+    url: https://github.com/sipcapture/upsipp/blob/main/GETTING_STARTED.md
     about: Setup instructions after using this template
   - name: Template maintenance
-    url: https://github.com/lmangani/upsipp/blob/main/TEMPLATE.md
+    url: https://github.com/sipcapture/upsipp/blob/main/TEMPLATE.md
     about: For maintainers of the UPSIPP template source

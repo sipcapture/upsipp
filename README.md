@@ -1,6 +1,6 @@
 # UPSIPP
 
-[![Use this template](https://img.shields.io/badge/Use%20this%20template-2ea44f?style=for-the-badge&logo=github)](https://github.com/lmangani/upsipp/generate)
+[![Use this template](https://img.shields.io/badge/Use%20this%20template-2ea44f?style=for-the-badge&logo=github)](https://github.com/sipcapture/upsipp/generate)
 
 **UPSIPP** is a SIP endpoint monitor and status page powered entirely by GitHub Actions, Issues, and Pages — inspired by [Upptime](https://github.com/upptime/upptime), with probes executed by [gossipper](https://github.com/sipcapture/gossipper) instead of HTTP pings.
 
@@ -8,7 +8,7 @@
 
 ## Quick start
 
-1. **[Use this template](https://github.com/lmangani/upsipp/generate)** → create a new repository under your account or org.
+1. **[Use this template](https://github.com/sipcapture/upsipp/generate)** → create a new repository under your account or org.
 2. Follow **[GETTING_STARTED.md](./GETTING_STARTED.md)** — enable Actions (required), optionally enable **GitHub Pages** for the status site, run **Setup CI**, edit `upsipp.yml`.
 3. Replace the example endpoint with your SIP target; **SIP Check CI** runs hourly by default (configurable in `upsipp.yml`).
 

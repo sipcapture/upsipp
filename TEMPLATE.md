@@ -1,6 +1,6 @@
 # Template repository maintenance
 
-This document is for **maintainers of the UPSIPP template source** (`lmangani/upsipp`), not for users who created their own repo from the template.
+This document is for **maintainers of the UPSIPP template source** (`sipcapture/upsipp`), not for users who created their own repo from the template.
 
 ## Enable GitHub template mode
 

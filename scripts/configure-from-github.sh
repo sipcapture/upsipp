@@ -23,7 +23,7 @@ current_repo="$(yq -r '.repo // ""' "$CONFIG")"
 
 is_placeholder_owner() {
   case "$1" in
-    YOUR_GITHUB_USERNAME|YOUR_USERNAME|lmangani|upptime|"") return 0 ;;
+    YOUR_GITHUB_USERNAME|YOUR_USERNAME|sipcapture|upptime|"") return 0 ;;
     *) return 1 ;;
   esac
 }
