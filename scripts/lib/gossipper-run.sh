@@ -39,6 +39,10 @@ run_gossipper() {
   local summary_json="$7"
   local user="${8:-}"
   local pass="${9:-}"
+  local tls_skip_verify="${10:-false}"
+  local health_min="${11:-}"
+  local health_max_failed="${12:-}"
+  local health_max_timeouts="${13:-}"
 
   local bin="${root}/bin/gossipper"
   if [[ ! -x "$bin" ]]; then
@@ -57,9 +61,27 @@ run_gossipper() {
     -r 1
     -timeout_global "$timeout"
     -summary_json "$summary_json"
-    -health_max_failed_calls 0
-    -health_max_timeouts 0
   )
+
+  if [[ -n "$health_min" && "$health_min" != "null" ]]; then
+    args+=(-health_min_success_ratio "$health_min")
+  fi
+
+  if [[ -n "$health_max_failed" && "$health_max_failed" != "null" ]]; then
+    args+=(-health_max_failed_calls "$health_max_failed")
+  else
+    args+=(-health_max_failed_calls 0)
+  fi
+
+  if [[ -n "$health_max_timeouts" && "$health_max_timeouts" != "null" ]]; then
+    args+=(-health_max_timeouts "$health_max_timeouts")
+  else
+    args+=(-health_max_timeouts 0)
+  fi
+
+  if [[ "$tls_skip_verify" == "true" ]]; then
+    args+=(-tls_skip_verify)
+  fi
 
   if [[ -n "$service" && "$service" != "null" ]]; then
     args+=(-s "$service")

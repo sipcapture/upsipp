@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - "upsipp.yml"
+      - ".github/workflows/**"
   repository_dispatch:
     types: [setup]
   workflow_dispatch:
@@ -32,6 +33,9 @@ jobs:
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
+      - name: Apply workflow schedules
+        run: ./scripts/generate-workflows.sh
+
       - name: Sync issue labels
         uses: micnncim/action-label-sync@v2
         with:
@@ -42,11 +46,11 @@ jobs:
         run: |
           git config user.name "UPSIPP Bot"
           git config user.email "upsipp-bot@users.noreply.github.com"
-          git add upsipp.yml
+          git add upsipp.yml .github/workflows/
           if git diff --cached --quiet; then
-            echo "No upsipp.yml changes to commit"
+            echo "No configuration changes to commit"
           else
-            git commit -m ":wrench: Configure upsipp.yml for ${GITHUB_REPOSITORY} [skip ci] [upsipp]"
+            git commit -m ":wrench: Apply upsipp.yml configuration [skip ci] [upsipp]"
             git push
           fi
         env:

@@ -35,7 +35,9 @@ for f in \
   .github/workflows/setup.yml \
   .github/workflows/site.yml \
   scenarios/options_client.xml \
+  scenarios/example_uac.xml \
   scripts/configure-from-github.sh \
+  scripts/generate-workflows.sh \
   scripts/check.sh \
   GETTING_STARTED.md; do
   [[ -f "$f" ]] || fail "Missing required template file: $f"

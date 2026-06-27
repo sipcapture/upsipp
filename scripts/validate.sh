@@ -17,7 +17,7 @@ echo "==> Bootstrapping yq..."
 source scripts/bootstrap.sh
 
 echo "==> Validating upsipp.yml..."
-yq -e '.owner and .repo and (.endpoints | length) > 0' upsipp.yml >/dev/null
+yq -e '.owner and .repo and ([.endpoints[] | select(.enabled != false)] | length) > 0' upsipp.yml >/dev/null
 
 echo "==> Generating .upptimerc.yml..."
 ./scripts/generate-upptimerc.sh

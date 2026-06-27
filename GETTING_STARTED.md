@@ -15,16 +15,30 @@ Do **not** fork the template repository for production monitoring — create a n
 
 In your **new** repository:
 
+### Required (SIP monitoring)
+
 1. **Settings → Actions → General** — allow Actions (enable if prompted).
 2. **Settings → Actions → General → Workflow permissions** — select **Read and write permissions** so the built-in `GITHUB_TOKEN` can commit history, update the README, and deploy Pages. UPSIPP does not use a personal access token (`GH_PAT`).
-3. **Settings → Pages** — set source to **Deploy from a branch**, branch **`gh-pages`**, folder **`/ (root)`**.
-   The first Static Site CI run creates the `gh-pages` branch.
+
+SIP checks, git history, and incidents work with Actions alone — no Pages setup needed.
+
+### Optional (public status page)
+
+To publish the Upptime-style status website:
+
+3. Run **Setup CI** or **Static Site CI** once — this builds the site and pushes the **`gh-pages`** branch.
+4. **Settings → Pages** — set source to **Deploy from a branch**, branch **`gh-pages`**, folder **`/ (root)`**.
+
+GitHub cannot enable Pages from a workflow; this one-time setting must be done in the repository (or org) settings. Until Pages is enabled, **Static Site CI** still runs and updates `gh-pages`, but nothing is served publicly.
 
 ## 3. Run Setup CI (first time)
+
+> Skip step 4 in section 2 if you only want monitoring (README table + Issues) without a public status page.
 
 1. Go to **Actions → Setup CI → Run workflow**.
 2. Setup CI will:
    - Auto-fill `owner` and `repo` in `upsipp.yml` from your GitHub repository
+   - Apply **`workflowSchedule`** to GitHub Actions (hourly checks by default)
    - Create issue labels (`upsipp`, `incident`)
    - Generate the README status table
    - Trigger graphs and status page builds
@@ -33,21 +47,34 @@ Alternatively, push any edit to `upsipp.yml` on `main` to trigger Setup CI.
 
 ## 4. Configure SIP endpoints
 
-Edit **`upsipp.yml`** in your repository (not in the template source):
+**`upsipp.yml`** ships with one active example (`enabled: true`) and additional **disabled examples** showing every supported feature — OPTIONS, builtin UAC, custom XML, auth secrets, TLS, health gates, and per-endpoint assignees. Set `enabled: true` on the ones you need.
+
+### Check frequency
+
+```yaml
+workflowSchedule:
+  uptime: "0 * * * *"       # every hour (default)
+  # uptime: "*/5 * * * *"   # every 5 min (GitHub minimum)
+```
+
+Changing `workflowSchedule` and pushing to `main` triggers **Setup CI**, which updates the workflow cron lines.
+
+### Minimal endpoint
 
 ```yaml
 endpoints:
   - name: Lab SBC
     slug: lab-sbc
+    enabled: true
     remote: 10.0.0.1:5060
     transport: u1
     scenario: options
     timeout_global: 15
 ```
 
-Replace `sip.example.com:5060` with a reachable SIP target. Remove the example endpoint when you add real ones.
+Replace `sip.example.com:5060` in the active example, or enable another example block. Disabled examples stay in the file as documentation until you enable them.
 
-Commit and push. Setup CI runs again; **SIP Check CI** starts on the 5-minute schedule (or run it manually).
+Commit and push. Setup CI runs again; **SIP Check CI** follows the `workflowSchedule.uptime` cron (or run it manually).
 
 ## 5. Verify monitoring
 

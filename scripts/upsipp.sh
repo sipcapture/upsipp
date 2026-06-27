@@ -14,6 +14,9 @@ case "$CMD" in
   generate-upptimerc)
     exec "${ROOT}/scripts/generate-upptimerc.sh"
     ;;
+  generate-workflows)
+    exec "${ROOT}/scripts/generate-workflows.sh"
+    ;;
   install-gossipper)
     exec "${ROOT}/scripts/install-gossipper.sh"
     ;;
@@ -27,6 +30,7 @@ Commands:
   update            Run gossipper checks, update history, manage incidents
   response-time     Record response times without incident updates
   generate-upptimerc  Build .upptimerc.yml from upsipp.yml
+  generate-workflows  Apply workflowSchedule to .github/workflows
   install-gossipper Download gossipper release binary
 EOF
     ;;

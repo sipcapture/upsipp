@@ -9,8 +9,8 @@
 ## Quick start
 
 1. **[Use this template](https://github.com/lmangani/upsipp/generate)** → create a new repository under your account or org.
-2. Follow **[GETTING_STARTED.md](./GETTING_STARTED.md)** — enable Actions & Pages, run **Setup CI**, edit `upsipp.yml`.
-3. Replace the example endpoint with your SIP target; **SIP Check CI** runs every 5 minutes.
+2. Follow **[GETTING_STARTED.md](./GETTING_STARTED.md)** — enable Actions (required), optionally enable **GitHub Pages** for the status site, run **Setup CI**, edit `upsipp.yml`.
+3. Replace the example endpoint with your SIP target; **SIP Check CI** runs hourly by default (configurable in `upsipp.yml`).
 
 ## Live status (your repo)
 
@@ -34,8 +34,8 @@ After Setup CI runs in **your** generated repository, this README section is upd
 
 | Workflow | Schedule | Purpose |
 | --- | --- | --- |
-| **Setup CI** | On `upsipp.yml` change / manual | Auto-configure owner/repo, labels, README, site |
-| **SIP Check CI** | Every 5 min | gossipper probes, history, incidents |
+| **Setup CI** | On `upsipp.yml` change / manual | Auto-configure owner/repo, workflow schedules, labels, README, site |
+| **SIP Check CI** | Hourly (default) | gossipper probes, history, incidents |
 | **Response Time CI** | Daily | Response time samples |
 | **Summary CI** | Daily | README status table |
 | **Graphs CI** | Daily | Response-time graphs |
@@ -43,16 +43,40 @@ After Setup CI runs in **your** generated repository, this README section is upd
 
 ## Configuration
 
-All user configuration lives in **`upsipp.yml`**. The template ships with placeholders:
+All user configuration lives in **`upsipp.yml`**. The template includes **commented examples** for every supported feature — enable them with `enabled: true` and set your SIP targets.
+
+### Check frequency
+
+```yaml
+workflowSchedule:
+  uptime: "0 * * * *"       # SIP Check CI — every hour (default)
+  # uptime: "*/5 * * * *"   # every 5 minutes (GitHub Actions minimum)
+```
+
+Setup CI applies `workflowSchedule` to the workflow files. GitHub cron minimum is 5 minutes.
+
+### Endpoint features (see `upsipp.yml` for full examples)
+
+| Feature | Config keys |
+| --- | --- |
+| OPTIONS health check | `scenario: options` (default, enabled) |
+| Built-in INVITE | `scenario: uac` |
+| Custom XML scenario | `scenario: scenarios/example_uac.xml` |
+| Digest auth | `auth.user_secret` / `auth.pass_secret` → GitHub Secrets |
+| TLS signaling | `transport: l1`, `tls_skip_verify: true` |
+| Health gates | `health.min_success_ratio`, `max_failed_calls`, `max_timeouts` |
+| Per-endpoint assignees | `assignees: [username]` |
+| Disable without deleting | `enabled: false` |
 
 ```yaml
 owner: YOUR_GITHUB_USERNAME   # auto-filled by Setup CI
-repo: YOUR_REPO_NAME          # auto-filled by Setup CI
+repo: YOUR_REPO_NAME
 
 endpoints:
-  - name: Example SIP Trunk
-    remote: sip.example.com:5060   # replace with your SIP target
-    scenario: options              # OPTIONS health check (default)
+  - name: Example Trunk — OPTIONS
+    enabled: true
+    remote: sip.example.com:5060
+    scenario: options
 ```
 
 See **[GETTING_STARTED.md](./GETTING_STARTED.md)** for the full setup guide and **[TEMPLATE.md](./TEMPLATE.md)** if you maintain this template source.

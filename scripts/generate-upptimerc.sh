@@ -39,6 +39,11 @@ COUNT="$(yq '.endpoints | length' "$CONFIG")"
 } > "$OUT"
 
 for ((i = 0; i < COUNT; i++)); do
+  enabled="$(yq -r ".endpoints[$i].enabled // true" "$CONFIG")"
+  if [[ "$enabled" == "false" ]]; then
+    continue
+  fi
+
   name="$(yq -r ".endpoints[$i].name" "$CONFIG")"
   slug="$(yq -r ".endpoints[$i].slug // \"\"" "$CONFIG")"
   remote="$(yq -r ".endpoints[$i].remote" "$CONFIG")"

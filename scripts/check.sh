@@ -37,23 +37,35 @@ if [[ -x "${ROOT}/bin/gossipper" ]]; then
 fi
 
 COUNT="$(yq '.endpoints | length' "$CONFIG")"
+ENABLED_COUNT="$(yq '[.endpoints[] | select(.enabled != false)] | length' "$CONFIG")"
 if [[ "$COUNT" -eq 0 ]]; then
   echo "No endpoints configured in upsipp.yml" >&2
+  exit 1
+fi
+if [[ "$ENABLED_COUNT" -eq 0 ]]; then
+  echo "No enabled endpoints in upsipp.yml (set enabled: true or remove enabled: false)" >&2
   exit 1
 fi
 
 COMMIT_TEMPLATE=$(yq -r '.commitMessages.statusChange // "$EMOJI $SITE_NAME is $STATUS ($RESPONSE_CODE in $RESPONSE_TIME ms) [skip ci] [upsipp]"' "$CONFIG")
 SKIP_DELETE="$(yq -r '.skipDeleteIssues // false' "$CONFIG")"
 ASSIGNEES_JSON="$(yq -o=json '.assignees // []' "$CONFIG")"
+DELAY_MS="$(yq -r '.delay // 0' "$CONFIG")"
 NOW="$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")"
 
 mkdir -p "${ROOT}/history"
 CHANGES=0
+CHECKED=0
 
 git -C "$ROOT" config user.name "UPSIPP Bot"
 git -C "$ROOT" config user.email "upsipp-bot@users.noreply.github.com"
 
 for ((i = 0; i < COUNT; i++)); do
+  enabled="$(yq -r ".endpoints[$i].enabled // true" "$CONFIG")"
+  if [[ "$enabled" == "false" ]]; then
+    continue
+  fi
+
   name="$(yq -r ".endpoints[$i].name" "$CONFIG")"
   slug="$(yq -r ".endpoints[$i].slug // \"\"" "$CONFIG")"
   remote="$(yq -r ".endpoints[$i].remote" "$CONFIG")"
@@ -61,6 +73,14 @@ for ((i = 0; i < COUNT; i++)); do
   scenario="$(yq -r ".endpoints[$i].scenario // \"options\"" "$CONFIG")"
   timeout="$(yq -r ".endpoints[$i].timeout_global // 15" "$CONFIG")"
   service="$(yq -r ".endpoints[$i].service // \"options\"" "$CONFIG")"
+  tls_skip="$(yq -r ".endpoints[$i].tls_skip_verify // false" "$CONFIG")"
+  health_min="$(yq -r ".endpoints[$i].health.min_success_ratio // \"\"" "$CONFIG")"
+  health_max_failed="$(yq -r ".endpoints[$i].health.max_failed_calls // \"\"" "$CONFIG")"
+  health_max_timeouts="$(yq -r ".endpoints[$i].health.max_timeouts // \"\"" "$CONFIG")"
+  ep_assignees_json="$(yq -o=json ".endpoints[$i].assignees // []" "$CONFIG")"
+  if [[ "$ep_assignees_json" == "[]" ]]; then
+    ep_assignees_json="$ASSIGNEES_JSON"
+  fi
 
   if [[ -z "$slug" || "$slug" == "null" ]]; then
     slug="$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-|-$//g')"
@@ -84,7 +104,7 @@ for ((i = 0; i < COUNT; i++)); do
   echo "Checking ${name} (${slug}) → ${remote}..."
 
   set +e
-  run_gossipper "$ROOT" "$remote" "$transport" "$scenario" "$timeout" "$service" "$summary_json" "$user" "$pass"
+  run_gossipper "$ROOT" "$remote" "$transport" "$scenario" "$timeout" "$service" "$summary_json" "$user" "$pass" "$tls_skip" "$health_min" "$health_max_failed" "$health_max_timeouts"
   exit_code=$?
   set -e
 
@@ -99,7 +119,7 @@ for ((i = 0; i < COUNT; i++)); do
 
   if [[ "$MODE" != "response-time" ]]; then
     if [[ "$status" != "$prev_status" || -z "$prev_status" ]]; then
-      manage_incident "$slug" "$name" "$status" "$code" "$response_time" "$summary_json" "$SKIP_DELETE" "$ASSIGNEES_JSON" || true
+      manage_incident "$slug" "$name" "$status" "$code" "$response_time" "$summary_json" "$SKIP_DELETE" "$ep_assignees_json" || true
     fi
   fi
 
@@ -118,6 +138,11 @@ for ((i = 0; i < COUNT; i++)); do
   fi
 
   rm -f "$summary_json"
+  CHECKED=$((CHECKED + 1))
+
+  if [[ "$DELAY_MS" -gt 0 && "$CHECKED" -lt "$ENABLED_COUNT" ]]; then
+    sleep "$(awk "BEGIN {print ${DELAY_MS}/1000}")"
+  fi
 done
 
 if [[ -n "${GITHUB_REPOSITORY:-}" ]]; then
@@ -132,4 +157,4 @@ if [[ "$CHANGES" -gt 0 ]]; then
   git -C "$ROOT" push origin HEAD 2>/dev/null || git -C "$ROOT" push 2>/dev/null || true
 fi
 
-echo "Checked ${COUNT} endpoint(s)."
+echo "Checked ${CHECKED} enabled endpoint(s) (${COUNT} defined, ${ENABLED_COUNT} enabled)."
