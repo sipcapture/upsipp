@@ -1,11 +1,9 @@
 # UPSIPP template configuration — edit after creating your repo from this template.
 # Setup CI auto-fills owner/repo and applies workflowSchedule to GitHub Actions.
-owner: YOUR_GITHUB_USERNAME
-repo: YOUR_REPO_NAME
-
+owner: sipcapture
+repo: upsipp
 gossipper:
   version: "0.1.64"
-
 # Delay between endpoint checks in milliseconds (optional).
 # delay: 1000
 
@@ -16,13 +14,12 @@ gossipper:
 # GitHub Actions cron schedules (applied to workflows by Setup CI).
 # GitHub minimum interval is 5 minutes (*/5 * * * *). Default: hourly.
 workflowSchedule:
-  uptime: "0 * * * *"       # SIP Check CI — every hour
+  uptime: "0 * * * *" # SIP Check CI — every hour
   # uptime: "*/5 * * * *"   # every 5 minutes (fastest GitHub allows)
-  graphs: "0 0 * * *"       # Graphs CI — daily at 00:00 UTC
+  graphs: "0 0 * * *" # Graphs CI — daily at 00:00 UTC
   responseTime: "0 23 * * *"
   staticSite: "0 1 * * *"
   summary: "0 0 * * *"
-
 endpoints:
   # ---------------------------------------------------------------------------
   # ACTIVE EXAMPLE — OPTIONS health check (default, lightweight)
@@ -32,11 +29,10 @@ endpoints:
     slug: example-options
     enabled: true
     remote: sip.example.com:5060
-    transport: u1              # u1 UDP | t1 TCP | l1/cl TLS
-    scenario: options          # built-in alias → scenarios/options_client.xml
-    service: options           # SIP Request-URI user part
+    transport: u1 # u1 UDP | t1 TCP | l1/cl TLS
+    scenario: options # built-in alias → scenarios/options_client.xml
+    service: options # SIP Request-URI user part
     timeout_global: 15
-
   # ---------------------------------------------------------------------------
   # BUILTIN UAC — single INVITE call (enable + set remote)
   # ---------------------------------------------------------------------------
@@ -45,10 +41,9 @@ endpoints:
     enabled: false
     remote: sip.example.com:5060
     transport: u1
-    scenario: uac              # gossipper -sn uac
+    scenario: uac # gossipper -sn uac
     timeout_global: 30
     service: upsipp
-
   # ---------------------------------------------------------------------------
   # CUSTOM XML — SIPp-compatible scenario file
   # ---------------------------------------------------------------------------
@@ -60,7 +55,6 @@ endpoints:
     scenario: scenarios/example_uac.xml
     timeout_global: 30
     service: upsipp
-
   # ---------------------------------------------------------------------------
   # DIGEST AUTH — store credentials in GitHub Secrets (Settings → Secrets)
   # ---------------------------------------------------------------------------
@@ -73,9 +67,8 @@ endpoints:
     service: options
     timeout_global: 15
     auth:
-      user_secret: SIP_USER     # GitHub secret name (without $)
+      user_secret: SIP_USER # GitHub secret name (without $)
       pass_secret: SIP_PASS
-
   # ---------------------------------------------------------------------------
   # TLS — signaling over TLS (lab: tls_skip_verify; production: use proper CA)
   # ---------------------------------------------------------------------------
@@ -83,12 +76,11 @@ endpoints:
     slug: example-tls
     enabled: false
     remote: sip.example.com:5061
-    transport: l1                # l1 or cl (TLS client)
+    transport: l1 # l1 or cl (TLS client)
     scenario: options
     service: options
     timeout_global: 15
     tls_skip_verify: true
-
   # ---------------------------------------------------------------------------
   # HEALTH THRESHOLDS — gossipper CI gates (exit code 2 on failure)
   # ---------------------------------------------------------------------------
@@ -103,7 +95,6 @@ endpoints:
       min_success_ratio: 1.0
       max_failed_calls: 0
       max_timeouts: 0
-
   # ---------------------------------------------------------------------------
   # PER-ENDPOINT ASSIGNEES — override global assignees for this endpoint
   # ---------------------------------------------------------------------------
@@ -115,10 +106,9 @@ endpoints:
     scenario: options
     assignees:
       - your-github-username
-
 # Status page (optional): enable GitHub Pages in repo Settings → Pages (gh-pages branch).
 status-website:
-  baseUrl: /YOUR_REPO_NAME
+  baseUrl: /upsipp
   name: UPSIPP
   introTitle: "**UPSIPP** monitors SIP endpoints with simulated sessions, powered entirely by GitHub Actions."
   introMessage: |
@@ -130,7 +120,6 @@ status-website:
       href: /
     - title: GitHub
       href: https://github.com/$OWNER/$REPO
-
 commitMessages:
   statusChange: "$EMOJI $SITE_NAME is $STATUS ($RESPONSE_CODE in $RESPONSE_TIME ms) [skip ci] [upsipp]"
   readmeContent: ":pencil: Update summary in README [skip ci] [upsipp]"
