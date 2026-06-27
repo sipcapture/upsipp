@@ -1,0 +1,7 @@
+url: sip:sip.example.com:5060
+status: down
+code: 0
+responseTime: 0
+lastUpdated: 2026-06-27T12:23:20.000Z
+startTime: 2026-06-27T12:23:20.000Z
+generator: UPSIPP <https://github.com/sipcapture/upsipp>
