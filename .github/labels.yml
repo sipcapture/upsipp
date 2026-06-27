@@ -1,0 +1,6 @@
+- name: upsipp
+  color: "1d76db"
+  description: "UPSIPP automation"
+- name: incident
+  color: "d93f0b"
+  description: "SIP endpoint incident"

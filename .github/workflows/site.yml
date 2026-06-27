@@ -1,0 +1,55 @@
+#
+# UPSIPP — inspired by Upptime Static Site CI
+
+name: Static Site CI
+on:
+  push:
+    paths:
+      - "assets/**"
+      - "upsipp.yml"
+  schedule:
+    - cron: "0 1 * * *"
+  repository_dispatch:
+    types: [static_site]
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.ref_name }}-upsipp
+  cancel-in-progress: false
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  release:
+    name: Build and deploy site
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Configure owner and repo from GitHub
+        run: ./scripts/configure-from-github.sh
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Generate .upptimerc.yml
+        run: ./scripts/generate-upptimerc.sh
+
+      - name: Generate site
+        uses: upptime/uptime-monitor@v1.43.3
+        with:
+          command: "site"
+        env:
+          GH_PAT: ${{ github.token }}
+
+      - uses: peaceiris/actions-gh-pages@v4
+        name: GitHub Pages Deploy
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: "site/status-page/__sapper__/export/"
+          force_orphan: "false"
+          user_name: "UPSIPP Bot"
+          user_email: "upsipp-bot@users.noreply.github.com"

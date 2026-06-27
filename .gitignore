@@ -1,0 +1,12 @@
+# Ignore downloaded tools
+/bin/
+/bin/gossipper
+/bin/yq
+
+# Generated config (regenerated in CI)
+.upptimerc.yml
+
+# Gossipper run artifacts
+*.json
+!api/**/*.json
+!.templaterc.json

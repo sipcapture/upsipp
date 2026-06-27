@@ -1,0 +1,45 @@
+# UPSIPP template configuration — edit after creating your repo from this template.
+# Setup CI can auto-fill owner/repo from GitHub; you must set real SIP endpoints.
+owner: YOUR_GITHUB_USERNAME
+repo: YOUR_REPO_NAME
+
+gossipper:
+  version: "0.1.64"
+
+endpoints:
+  - name: Example SIP Trunk
+    slug: example-trunk
+    remote: sip.example.com:5060
+    transport: u1
+    scenario: options
+    timeout_global: 15
+    service: options
+
+# assignees:
+#   - your-github-username
+
+status-website:
+  baseUrl: /YOUR_REPO_NAME
+  name: UPSIPP
+  introTitle: "**UPSIPP** monitors SIP endpoints with simulated sessions, powered entirely by GitHub Actions."
+  introMessage: |
+    Inspired by [Upptime](https://github.com/upptime/upptime). Checks run via
+    [gossipper](https://github.com/sipcapture/gossipper) OPTIONS scenarios by default.
+    Configure endpoints in [`upsipp.yml`](https://github.com/$OWNER/$REPO/blob/HEAD/upsipp.yml).
+  navbar:
+    - title: Status
+      href: /
+    - title: GitHub
+      href: https://github.com/$OWNER/$REPO
+
+commitMessages:
+  statusChange: "$EMOJI $SITE_NAME is $STATUS ($RESPONSE_CODE in $RESPONSE_TIME ms) [skip ci] [upsipp]"
+  readmeContent: ":pencil: Update summary in README [skip ci] [upsipp]"
+  graphsUpdate: ":bento: Update graphs [skip ci] [upsipp]"
+
+workflowSchedule:
+  uptime: "*/5 * * * *"
+  graphs: "0 0 * * *"
+  responseTime: "0 23 * * *"
+  staticSite: "0 1 * * *"
+  summary: "0 0 * * *"

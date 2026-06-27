@@ -1,0 +1,25 @@
+#
+# Validates the UPSIPP template repository structure (maintainers only).
+#
+
+name: Template Validate CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate template structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate template
+        run: ./scripts/validate-template.sh

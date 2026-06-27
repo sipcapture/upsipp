@@ -1,0 +1,75 @@
+#
+# UPSIPP — inspired by Upptime Setup CI
+
+name: Setup CI
+on:
+  push:
+    branches: [main]
+    paths:
+      - "upsipp.yml"
+  repository_dispatch:
+    types: [setup]
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.ref_name }}-upsipp
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+  actions: write
+jobs:
+  release:
+    name: Setup UPSIPP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Configure owner and repo from GitHub
+        run: ./scripts/configure-from-github.sh
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Sync issue labels
+        uses: micnncim/action-label-sync@v2
+        with:
+          token: ${{ github.token }}
+          labels: .github/labels.yml
+
+      - name: Commit auto-configured upsipp.yml
+        run: |
+          git config user.name "UPSIPP Bot"
+          git config user.email "upsipp-bot@users.noreply.github.com"
+          git add upsipp.yml
+          if git diff --cached --quiet; then
+            echo "No upsipp.yml changes to commit"
+          else
+            git commit -m ":wrench: Configure upsipp.yml for ${GITHUB_REPOSITORY} [skip ci] [upsipp]"
+            git push
+          fi
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Generate .upptimerc.yml
+        run: ./scripts/generate-upptimerc.sh
+
+      - name: Update summary in README
+        uses: upptime/uptime-monitor@v1.43.3
+        with:
+          command: "readme"
+        env:
+          GH_PAT: ${{ github.token }}
+
+      - name: Generate graphs
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Graphs CI
+          token: ${{ github.token }}
+
+      - name: Generate site
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Static Site CI
+          token: ${{ github.token }}

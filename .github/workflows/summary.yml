@@ -1,0 +1,39 @@
+#
+# UPSIPP — inspired by Upptime Summary CI
+
+name: Summary CI
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  repository_dispatch:
+    types: [summary]
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.ref_name }}-upsipp
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  release:
+    name: Generate README
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Configure owner and repo from GitHub
+        run: ./scripts/configure-from-github.sh
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Generate .upptimerc.yml
+        run: ./scripts/generate-upptimerc.sh
+
+      - name: Update summary in README
+        uses: upptime/uptime-monitor@v1.43.3
+        with:
+          command: "readme"
+        env:
+          GH_PAT: ${{ github.token }}

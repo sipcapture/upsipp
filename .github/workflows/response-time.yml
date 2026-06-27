@@ -1,0 +1,36 @@
+#
+# UPSIPP — inspired by Upptime Response Time CI
+
+name: Response Time CI
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  repository_dispatch:
+    types: [response_time]
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.ref_name }}-upsipp
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+jobs:
+  release:
+    name: Record SIP response times
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install gossipper
+        run: ./scripts/install-gossipper.sh
+
+      - name: Record response times
+        run: ./scripts/check.sh response-time
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          SECRETS_CONTEXT: ${{ toJson(secrets) }}
