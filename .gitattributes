@@ -7,6 +7,3 @@
 
 # YAML
 *.yml linguist-detectable=true
-
-# Shell
-*.sh linguist-detectable=true

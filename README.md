@@ -4,7 +4,7 @@
 
 **UPSIPP** is a SIP endpoint monitor and status page powered entirely by GitHub Actions, Issues, and Pages — inspired by [Upptime](https://github.com/upptime/upptime), with probes executed by [gossipper](https://github.com/sipcapture/gossipper) instead of HTTP pings.
 
-> **This repository is a GitHub template.** To monitor your SIP infrastructure, click **Use this template** above and create your own repository. 
+> **This repository is a GitHub template.** To monitor your SIP infrastructure, click **Use this template** above and create your own repository.
 
 ## Quick start
 
@@ -16,30 +16,30 @@
 
 After Setup CI runs in **your** generated repository, this README section is updated automatically:
 
-| Endpoint | Status | History | Response time | Uptime |
-| --- | --- | --- | --- | --- |
-| _Run Setup CI in your repo to populate this table._ | | | | |
+| Endpoint                                            | Status | History | Response time | Uptime |
+| --------------------------------------------------- | ------ | ------- | ------------- | ------ |
+| _Run Setup CI in your repo to populate this table._ |        |         |               |        |
 
 ## How it works
 
-| Layer | Upptime | UPSIPP |
-| --- | --- | --- |
-| Config | `.upptimerc.yml` | **`upsipp.yml`** → generates `.upptimerc.yml` |
-| Probe | HTTP `curl` | **gossipper** SIP scenario (OPTIONS default) |
-| History / graphs / site | `upptime/uptime-monitor` | **Same** (compatible `history/*.yml`) |
-| Incidents | GitHub Issues | **Same** |
-| Status page | GitHub Pages | **Same** |
+| Layer                   | Upptime                  | UPSIPP                                        |
+| ----------------------- | ------------------------ | --------------------------------------------- |
+| Config                  | `.upptimerc.yml`         | **`upsipp.yml`** → generates `.upptimerc.yml` |
+| Probe                   | HTTP `curl`              | **gossipper** SIP scenario (OPTIONS default)  |
+| History / graphs / site | `upptime/uptime-monitor` | **Same** (compatible `history/*.yml`)         |
+| Incidents               | GitHub Issues            | **Same**                                      |
+| Status page             | GitHub Pages             | **Same**                                      |
 
 ### Workflows
 
-| Workflow | Schedule | Purpose |
-| --- | --- | --- |
-| **Setup CI** | On `upsipp.yml` change / manual | Auto-configure owner/repo, workflow schedules, labels, README, site |
-| **SIP Check CI** | Hourly (default) | gossipper probes, history, incidents |
-| **Response Time CI** | Daily | Response time samples |
-| **Summary CI** | Daily | README status table |
-| **Graphs CI** | Daily | Response-time graphs |
-| **Static Site CI** | Daily + config change | GitHub Pages deploy |
+| Workflow             | Schedule                        | Purpose                                                             |
+| -------------------- | ------------------------------- | ------------------------------------------------------------------- |
+| **Setup CI**         | On `upsipp.yml` change / manual | Auto-configure owner/repo, workflow schedules, labels, README, site |
+| **SIP Check CI**     | Hourly (default)                | gossipper probes, history, incidents                                |
+| **Response Time CI** | Daily                           | Response time samples                                               |
+| **Summary CI**       | Daily                           | README status table                                                 |
+| **Graphs CI**        | Daily                           | Response-time graphs                                                |
+| **Static Site CI**   | Daily + config change           | GitHub Pages deploy                                                 |
 
 ## Configuration
 
@@ -49,7 +49,7 @@ All user configuration lives in **`upsipp.yml`**. The template includes **commen
 
 ```yaml
 workflowSchedule:
-  uptime: "0 * * * *"       # SIP Check CI — every hour (default)
+  uptime: "0 * * * *" # SIP Check CI — every hour (default)
   # uptime: "*/5 * * * *"   # every 5 minutes (GitHub Actions minimum)
 ```
 
@@ -57,19 +57,19 @@ Setup CI applies `workflowSchedule` to the workflow files. GitHub cron minimum i
 
 ### Endpoint features (see `upsipp.yml` for full examples)
 
-| Feature | Config keys |
-| --- | --- |
-| OPTIONS health check | `scenario: options` (default, enabled) |
-| Built-in INVITE | `scenario: uac` |
-| Custom XML scenario | `scenario: scenarios/example_uac.xml` |
-| Digest auth | `auth.user_secret` / `auth.pass_secret` → GitHub Secrets |
-| TLS signaling | `transport: l1`, `tls_skip_verify: true` |
-| Health gates | `health.min_success_ratio`, `max_failed_calls`, `max_timeouts` |
-| Per-endpoint assignees | `assignees: [username]` |
-| Disable without deleting | `enabled: false` |
+| Feature                  | Config keys                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| OPTIONS health check     | `scenario: options` (default, enabled)                         |
+| Built-in INVITE          | `scenario: uac`                                                |
+| Custom XML scenario      | `scenario: scenarios/example_uac.xml`                          |
+| Digest auth              | `auth.user_secret` / `auth.pass_secret` → GitHub Secrets       |
+| TLS signaling            | `transport: l1`, `tls_skip_verify: true`                       |
+| Health gates             | `health.min_success_ratio`, `max_failed_calls`, `max_timeouts` |
+| Per-endpoint assignees   | `assignees: [username]`                                        |
+| Disable without deleting | `enabled: false`                                               |
 
 ```yaml
-owner: YOUR_GITHUB_USERNAME   # auto-filled by Setup CI
+owner: YOUR_GITHUB_USERNAME # auto-filled by Setup CI
 repo: YOUR_REPO_NAME
 
 endpoints:
