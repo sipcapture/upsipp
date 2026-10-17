@@ -90,6 +90,22 @@ done
 
 echo "    secret handling OK"
 
+echo "==> Testing label sync..."
+label_cmds="$(./scripts/sync-labels.sh --dry-run)"
+printf '%s\n' "$label_cmds" | grep -q 'gh label create upsipp ' || {
+  echo "ERROR: label sync did not emit the 'upsipp' label" >&2
+  exit 1
+}
+printf '%s\n' "$label_cmds" | grep -q 'gh label create incident ' || {
+  echo "ERROR: label sync did not emit the 'incident' label" >&2
+  exit 1
+}
+# Setup CI must not depend on an external label-sync action again.
+if grep -REnq 'action-label-sync' .github/workflows; then
+  echo "ERROR: a workflow references the removed action-label-sync action" >&2
+  exit 1
+fi
+
 echo ""
 echo "All offline checks passed."
 echo ""
