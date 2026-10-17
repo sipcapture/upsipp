@@ -9,6 +9,7 @@ source "${ROOT}/scripts/bootstrap.sh"
 source "${ROOT}/scripts/lib/gossipper-run.sh"
 source "${ROOT}/scripts/lib/history-write.sh"
 source "${ROOT}/scripts/lib/issues.sh"
+source "${ROOT}/scripts/lib/secrets.sh"
 
 if [[ ! -f "$CONFIG" ]]; then
   echo "Missing ${CONFIG}" >&2
@@ -20,17 +21,6 @@ if [[ -n "${GITHUB_REPOSITORY:-}" ]]; then
 fi
 
 "${ROOT}/scripts/generate-upptimerc.sh"
-
-# Export repository secrets referenced in upsipp.yml (same pattern as Upptime).
-if [[ -n "${SECRETS_CONTEXT:-}" ]]; then
-  while IFS= read -r key; do
-    [[ -z "$key" ]] && continue
-    val="$(echo "$SECRETS_CONTEXT" | jq -r --arg k "$key" '.[$k] // empty')"
-    if [[ -n "$val" ]]; then
-      export "$key=$val"
-    fi
-  done < <(echo "$SECRETS_CONTEXT" | jq -r 'keys[]?')
-fi
 
 if [[ -x "${ROOT}/bin/gossipper" ]]; then
   export PATH="${ROOT}/bin:${PATH}"
@@ -88,13 +78,13 @@ for ((i = 0; i < COUNT; i++)); do
 
   user_secret="$(yq -r ".endpoints[$i].auth.user_secret // \"\"" "$CONFIG")"
   pass_secret="$(yq -r ".endpoints[$i].auth.pass_secret // \"\"" "$CONFIG")"
-  user=""
-  pass=""
-  if [[ -n "$user_secret" && "$user_secret" != "null" && -n "${!user_secret:-}" ]]; then
-    user="${!user_secret}"
+  user="$(resolve_secret "$user_secret")"
+  pass="$(resolve_secret "$pass_secret")"
+  if [[ -n "$user_secret" && "$user_secret" != "null" && -z "$user" ]]; then
+    echo "Warning: ${name}: auth.user_secret '${user_secret}' is not set. Add it to the workflow env: block (see GETTING_STARTED.md)." >&2
   fi
-  if [[ -n "$pass_secret" && "$pass_secret" != "null" && -n "${!pass_secret:-}" ]]; then
-    pass="${!pass_secret}"
+  if [[ -n "$pass_secret" && "$pass_secret" != "null" && -z "$pass" ]]; then
+    echo "Warning: ${name}: auth.pass_secret '${pass_secret}' is not set. Add it to the workflow env: block (see GETTING_STARTED.md)." >&2
   fi
 
   url="sip:${remote}"

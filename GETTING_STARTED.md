@@ -76,6 +76,31 @@ Replace `sip.example.com:5060` in the active example, or enable another example 
 
 Commit and push. Setup CI runs again; **SIP Check CI** follows the `workflowSchedule.uptime` cron (or run it manually).
 
+### Digest authentication
+
+For endpoints that require SIP digest auth, create repository secrets
+(**Settings → Secrets and variables → Actions → New repository secret**) named
+`SIP_USER` and `SIP_PASS`, then reference them from `upsipp.yml`:
+
+```yaml
+    auth:
+      user_secret: SIP_USER
+      pass_secret: SIP_PASS
+```
+
+`user_secret` / `pass_secret` hold the **environment variable name**, not the
+credential itself. The workflows expose only the secrets they explicitly list
+(`SIP_USER`, `SIP_PASS`) — they never pass the whole secrets context to the
+runner. To use different secret names, add them to the `env:` block of
+**both** `.github/workflows/sip-check.yml` and `.github/workflows/response-time.yml`:
+
+```yaml
+          MY_TRUNK_USER: ${{ secrets.MY_TRUNK_USER }}
+          MY_TRUNK_PASS: ${{ secrets.MY_TRUNK_PASS }}
+```
+
+Checks warn when an endpoint references a secret that is not exposed.
+
 ## 5. Verify monitoring
 
 | Check | Where |
