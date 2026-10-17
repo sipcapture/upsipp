@@ -33,4 +33,9 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
-          SECRETS_CONTEXT: ${{ toJson(secrets) }}
+          # Digest-auth credentials (Settings → Secrets and variables → Actions).
+          # Only these named secrets are handed to the runner; the full secrets
+          # context is intentionally never exposed. If your endpoints reference
+          # other secrets in upsipp.yml, list them here too.
+          SIP_USER: ${{ secrets.SIP_USER }}
+          SIP_PASS: ${{ secrets.SIP_PASS }}

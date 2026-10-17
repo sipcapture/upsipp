@@ -62,7 +62,7 @@ Setup CI applies `workflowSchedule` to the workflow files. GitHub cron minimum i
 | OPTIONS health check     | `scenario: options` (default, enabled)                         |
 | Built-in INVITE          | `scenario: uac`                                                |
 | Custom XML scenario      | `scenario: scenarios/example_uac.xml`                          |
-| Digest auth              | `auth.user_secret` / `auth.pass_secret` → GitHub Secrets       |
+| Digest auth              | `auth.user_secret` / `auth.pass_secret` → `SIP_USER`/`SIP_PASS` GitHub Secrets |
 | TLS signaling            | `transport: l1`, `tls_skip_verify: true`                       |
 | Health gates             | `health.min_success_ratio`, `max_failed_calls`, `max_timeouts` |
 | Per-endpoint assignees   | `assignees: [username]`                                        |

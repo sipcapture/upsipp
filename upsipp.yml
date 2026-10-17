@@ -56,7 +56,12 @@ endpoints:
     timeout_global: 30
     service: upsipp
   # ---------------------------------------------------------------------------
-  # DIGEST AUTH — store credentials in GitHub Secrets (Settings → Secrets)
+  # DIGEST AUTH — store credentials in GitHub Secrets (Settings → Secrets).
+  # The value below is the *environment variable name* the workflow must expose
+  # (SIP_USER / SIP_PASS are already listed in sip-check.yml and
+  # response-time.yml). To use a different name, add it to the `env:` block of
+  # both workflows as NAME: ${{ secrets.NAME }}. Only explicitly listed secrets
+  # are ever handed to the runner.
   # ---------------------------------------------------------------------------
   - name: Example Trunk — authenticated OPTIONS
     slug: example-auth
@@ -67,7 +72,7 @@ endpoints:
     service: options
     timeout_global: 15
     auth:
-      user_secret: SIP_USER # GitHub secret name (without $)
+      user_secret: SIP_USER # env var name, exposed via workflow env (no $)
       pass_secret: SIP_PASS
   # ---------------------------------------------------------------------------
   # TLS — signaling over TLS (lab: tls_skip_verify; production: use proper CA)
