@@ -39,6 +39,7 @@ for f in \
   scripts/configure-from-github.sh \
   scripts/generate-workflows.sh \
   scripts/check.sh \
+  scripts/sync-labels.sh \
   GETTING_STARTED.md; do
   [[ -f "$f" ]] || fail "Missing required template file: $f"
 done
